@@ -1,3 +1,3 @@
-# quizz
+# quiz app using flutter 
 
 
