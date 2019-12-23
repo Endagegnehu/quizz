@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'question.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'quizBrain.dart';
+
+QuizBrain quizBrain = QuizBrain();
 
 void main() => runApp(Quizzler());
 
@@ -26,21 +29,45 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  
   List<Icon> scorekeeper = [];
-  List<String> question = [
-    'You can lead a cow down stairs but not up stairs.',
-    'Approximately one quarter of human bones are in the feet.',
-    'A slug\'s blood is green.'
-  ];
+  icons_(bool correctAnswer){
+    bool correctAnswer = quizBrain.getQuestionAnswer();
+    setState(() {
+    if(correctAnswer == true){
+      scorekeeper.add(Icon(
+        Icons.check,
+        color: Colors.green,
+      ));
+    }else{
+      scorekeeper.add(Icon(
+        Icons.close,
+        color: Colors.red,
+      ));
+    }
+
+    if(quizBrain.nextQuestion() == false){
+      Alert(
+        context: context,
+        title: 'Finished!',
+        desc: 'You\'ve reached the end of the quiz.',
+      ).show();
+
+      //TODO Step 4 Part C - reset the questionNumber,
+      quizBrain.reset();
+
+      //TODO Step 4 Part D - empty out the scoreKeeper.
+      scorekeeper = [];
+      quizBrain.reset();
+    }
+    });
+  }
   List<bool> answer = [
     false,
     true,
     true,
   ];
 
-  Question q1 =
-
-  var questionNumber = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -54,12 +81,12 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                question[questionNumber],
+                quizBrain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
                   color: Colors.white,
-                ),
+                 ),
               ),
             ),
           ),
@@ -78,25 +105,9 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correctAnswer = answer[questionNumber];
-                if(correctAnswer == true){
-                  scorekeeper.add(Icon(
-                    Icons.check,
-                    color: Colors.green,
-                  ));
-                }else{
-                  scorekeeper.add(Icon(
-                    Icons.close,
-                    color: Colors.red,
-                  ));
-                }
+                icons_(true);
                 setState(() {
-                  if(questionNumber == 2){
-                    questionNumber =0;
-                    scorekeeper.removeRange(0, 2);
-                  }else{
-                    questionNumber++;
-                  }
+//                  quizBrain.nextQuestion();
                 });
               },
             ),
@@ -115,25 +126,10 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correctAnswer = answer[questionNumber];
-                if(correctAnswer == false){
-                  scorekeeper.add(Icon(
-                    Icons.check,
-                    color: Colors.green,
-                  ));
-                }else{
-                  scorekeeper.add(Icon(
-                    Icons.close,
-                    color: Colors.red,
-                  ));
-                }
+                
+                icons_(false);
                 setState(() {
-                  if(questionNumber == 2){
-                    questionNumber =0;
-                    scorekeeper.removeRange(0, 2);
-                  }else{
-                    questionNumber++;
-                  }
+//                  quizBrain.nextQuestion();
                 });
               },
             ),
